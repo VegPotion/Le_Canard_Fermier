@@ -3,6 +3,7 @@
 
 #include <SFML/Graphics.hpp>
 #include <vector>
+#include <string>
 #include <iostream>
 
 #include "../item/item.hpp"
@@ -10,11 +11,17 @@
 class Tile{
     public:
         Tile();
-        Tile(bool allFalse);
+        Tile(bool allFalse, std::string texPath);
         bool tilled;
         bool planted;
         ItemID crop;
         int stage;
+        sf::Texture tex;
+        sf::Texture cropTex;
+        void setCrop(ItemID cropType);
+        void draw(sf::RenderWindow* window);
+    private:
+        std::string path;
 };
 
 namespace grid{

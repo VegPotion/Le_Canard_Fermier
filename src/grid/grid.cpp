@@ -4,13 +4,19 @@ Tile::Tile(){
     // error handling
 }
 
-Tile::Tile(bool allFalse){
+Tile::Tile(bool allFalse, std::string texPath){
     if(allFalse){
         tilled = false;
         planted = false;
         crop = Null;
         stage = 0;
     }
+    path = texPath;
+}
+
+void Tile::setCrop(ItemID cropType){
+    crop = cropType;
+    // add switch statement for crop texturing
 }
 
 void grid::setGrid(int maxWidth, int maxHeight, sf::RenderWindow* window){

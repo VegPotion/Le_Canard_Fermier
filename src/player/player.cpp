@@ -95,30 +95,30 @@ void Player::input(sf::Time delta){
         facing = RIGHT;
     }
     if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){
+        sf::Vector2i currentSquare(0, 0);
+        if(loadedTexture){
+            // I don't have a texture width yet
+        }
+        else{
+            currentSquare = grid::xyToGridSquare(x + 10, y + 10);
+        }
         if(heldItem.ID == Houe){
-            sf::Vector2i currentSquare(0, 0);
-            if(loadedTexture){
-                // I don't have a texture width yet
-            }
-            else{
-                currentSquare = grid::xyToGridSquare(x + 10, y + 10);
-            }
             sf::Vector2i nextSquare(-1, -1);
             switch(facing){
                 case UP:
-                    nextSquare.x = currentSquare.x;
+                    nextSquare.x = currentSquare.x - 1;
                     nextSquare.y = currentSquare.y;
                     break;
                 case DOWN:
-                    nextSquare.x = currentSquare.x;
+                    nextSquare.x = currentSquare.x + 1;
                     nextSquare.y = currentSquare.y;
                     break;
                 case LEFT:
                     nextSquare.x = currentSquare.x;
-                    nextSquare.y = currentSquare.y;
+                    nextSquare.y = currentSquare.y - 1;
                 case RIGHT:
                     nextSquare.x = currentSquare.x;
-                    nextSquare.y = currentSquare.y;
+                    nextSquare.y = currentSquare.y + 1;
                 default:
                     break;
             }
@@ -134,6 +134,12 @@ void Player::input(sf::Time delta){
             else{
                 std::cout << "Next Square out of range\n";
                 std::cout << "x: " << nextSquare.x << " y: " << nextSquare.y << std::endl;
+            }
+        }
+        else if(heldItem.ID >= 7 && heldItem.ID <= 14){
+            if(grid::gridSquares.at(currentSquare.x).at(currentSquare.y).tilled){
+               grid::gridSquares.at(currentSquare.x).at(currentSquare.y).planted = true;
+               grid::gridSquares.at(currentSquare.x).at(currentSquare.y).setCrop(heldItem.ID);
             }
         }
     }
