@@ -17,6 +17,36 @@ Tile::Tile(bool allFalse, std::string texPath){
 void Tile::setCrop(ItemID cropType){
     crop = cropType;
     // add switch statement for crop texturing
+    stage = 0;
+    switch(crop){
+        case Graines_de_Citrouille:
+            cropTex.loadFromFile("../../resources/crops/pumpkin/stage1.png");
+            break;
+        case Graines_de_Tomate:
+            cropTex.loadFromFile("../../resources/crops/tomato/stage1.png");
+            break;
+        case Graines_de_chu:
+            cropTex.loadFromFile("../../resources/crops/cabbage/stage1.png");
+            break;
+        case Graines_de_carotte:
+            cropTex.loadFromFile("../../resources/crops/carrot/stage1.png");
+            break;
+        case Graines_d_aubergine:
+            cropTex.loadFromFile("../../resources/crops/eggplant/stage1.png");
+            break;
+        case Graines_de_pomme_de_terre:
+            cropTex.loadFromFile("../../resources/crops/potato/stage1.png");
+            break;
+        case Graines_de_fraise:
+            cropTex.loadFromFile("../../resources/crops/strawberry/stage1.png");
+            break;
+        case Graines_de_Panais:
+            cropTex.loadFromFile("../../resources/crops/parsnip/stage1.png");
+            break;
+        default:
+            break;
+    }
+
 }
 
 void grid::setGrid(int maxWidth, int maxHeight, sf::RenderWindow* window){
@@ -30,7 +60,7 @@ void grid::setGrid(int maxWidth, int maxHeight, sf::RenderWindow* window){
     }
     for(int j = 0; j < gridSquares.size(); j++){
         for(int n = 0; n < gridSquares.at(j).size(); n++){
-            Tile temp(true);
+            Tile temp(true, "NULL");
             gridSquares.at(j).at(n) = temp;
         }
     }
@@ -53,7 +83,24 @@ void grid::draw(sf::RenderWindow* window){
             if(grid::gridSquares.at(i).at(j).tilled){
                 gridSquare.setFillColor(sf::Color::Red);
             }
-            window->draw(gridSquare);
+            if(grid::gridSquares.at(i).at(j).path != "NULL"){
+                sf::Sprite sprite;
+                sprite.setPosition(x, y);
+                sprite.setTexture(grid::gridSquares.at(i).at(j).tex);
+                window->draw(sprite);
+                std::cout << "Drew sprite\n";
+            }
+            else{
+                std::cout << "Drew square\n";
+                window->draw(gridSquare);
+            }
+            if(grid::gridSquares.at(i).at(j).stage == 0){
+                sf::Sprite crop;
+                crop.setPosition(x, y);
+                crop.setTexture(grid::gridSquares.at(i).at(j).cropTex);
+                window->draw(crop);
+                std::cout << "Drew crop\n";
+            }
             white = !white;
             j++;
         }

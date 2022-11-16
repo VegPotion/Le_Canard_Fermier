@@ -15,12 +15,10 @@ class Tile{
         bool tilled;
         bool planted;
         ItemID crop;
-        int stage;
+        int stage = -1;
         sf::Texture tex;
         sf::Texture cropTex;
         void setCrop(ItemID cropType);
-        void draw(sf::RenderWindow* window);
-    private:
         std::string path;
 };
 
