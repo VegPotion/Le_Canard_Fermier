@@ -9,39 +9,43 @@ Tile::Tile(bool allFalse, std::string texPath){
         tilled = false;
         planted = false;
         crop = Null;
-        stage = 0;
+        stage = -1;
     }
     path = texPath;
 }
 
-void Tile::setCrop(ItemID cropType){
+void Tile::setCrop(ItemID cropType, int stage){
     crop = cropType;
     // add switch statement for crop texturing
-    stage = 0;
+    this->stage = stage;
+    if(stage > 3){
+        std::cerr << "Given too high of a stage\n";
+        return;
+    }
     switch(crop){
         case Graines_de_Citrouille:
-            cropTex.loadFromFile("../../resources/crops/pumpkin/stage1.png");
+            cropTex.loadFromFile("resources/crops/pumpkin/stage" + std::to_string(stage+1) + ".png");
             break;
         case Graines_de_Tomate:
-            cropTex.loadFromFile("../../resources/crops/tomato/stage1.png");
+            cropTex.loadFromFile("resources/crops/tomato/stage" + std::to_string(stage+1) + ".png");
             break;
         case Graines_de_chu:
-            cropTex.loadFromFile("../../resources/crops/cabbage/stage1.png");
+            cropTex.loadFromFile("resources/crops/cabbage/stage" + std::to_string(stage+1) + ".png");
             break;
         case Graines_de_carotte:
-            cropTex.loadFromFile("../../resources/crops/carrot/stage1.png");
+            cropTex.loadFromFile("resources/crops/carrot/stage" + std::to_string(stage+1) + ".png");
             break;
         case Graines_d_aubergine:
-            cropTex.loadFromFile("../../resources/crops/eggplant/stage1.png");
+            cropTex.loadFromFile("resources/crops/eggplant/stage" + std::to_string(stage+1) + ".png");
             break;
         case Graines_de_pomme_de_terre:
-            cropTex.loadFromFile("../../resources/crops/potato/stage1.png");
+            cropTex.loadFromFile("resources/crops/potato/stage" + std::to_string(stage+1) + ".png");
             break;
         case Graines_de_fraise:
-            cropTex.loadFromFile("../../resources/crops/strawberry/stage1.png");
+            cropTex.loadFromFile("resources/crops/strawberry/stage" + std::to_string(stage+1) + ".png");
             break;
         case Graines_de_Panais:
-            cropTex.loadFromFile("../../resources/crops/parsnip/stage1.png");
+            cropTex.loadFromFile("resources/crops/parsnip/stage" + std::to_string(stage+1) + ".png");
             break;
         default:
             break;
@@ -72,34 +76,24 @@ void grid::draw(sf::RenderWindow* window){
     int j = 0;
     for(float x = 0.0f; x < grid::MAXW*grid::width; x += width){
         for(float y = 0.0f; y < grid::MAXH*grid::height; y += height){
-            sf::RectangleShape gridSquare(sf::Vector2f(grid::width, grid::height));
-            gridSquare.setPosition(x, y);
-            if(white){
-                gridSquare.setFillColor(sf::Color::White);
+            if(grid::gridSquares.at(i).at(j).clock.getElapsedTime().asSeconds() > 10.0f){
+                grid::gridSquares.at(i).at(j).stage++;
+                grid::gridSquares.at(i).at(j).setCrop(grid::gridSquares.at(i).at(j).crop, grid::gridSquares.at(i).at(j).stage);
+                grid::gridSquares.at(i).at(j).clock.restart();
             }
-            else{
-                gridSquare.setFillColor(sf::Color::Black);
-            }
-            if(grid::gridSquares.at(i).at(j).tilled){
-                gridSquare.setFillColor(sf::Color::Red);
-            }
-            if(grid::gridSquares.at(i).at(j).path != "NULL"){
-                sf::Sprite sprite;
-                sprite.setPosition(x, y);
-                sprite.setTexture(grid::gridSquares.at(i).at(j).tex);
-                window->draw(sprite);
-                std::cout << "Drew sprite\n";
-            }
-            else{
-                std::cout << "Drew square\n";
-                window->draw(gridSquare);
-            }
-            if(grid::gridSquares.at(i).at(j).stage == 0){
+			if(grid::gridSquares.at(i).at(j).tilled){
+				sf::RectangleShape soil(sf::Vector2f(40, 40));
+				soil.setFillColor(sf::Color(150, 75, 0, 255));
+				soil.setPosition(x, y);
+				window->draw(soil);
+			}
+            if(grid::gridSquares.at(i).at(j).stage >= 0){
                 sf::Sprite crop;
+                crop.setScale(2, 2);
                 crop.setPosition(x, y);
                 crop.setTexture(grid::gridSquares.at(i).at(j).cropTex);
                 window->draw(crop);
-                std::cout << "Drew crop\n";
+                // std::cout << "Drew crop at: " << i << ", " << j << "\n";
             }
             white = !white;
             j++;
@@ -115,13 +109,14 @@ sf::Vector2i grid::xyToGridSquare(float _x, float _y){
     for(float x = 0.0f; x < grid::MAXW*grid::width; x += width){
            for(float y = 0.0f; y < grid::MAXH*grid::height; y += height){
                if(_x > x && _x < x+grid::width && _y > y && _y < y+grid::height){
-                   std::cout << "result.x = " << result.x << ", result.y = " << result.y << std::endl;
+                //    std::cout << "result.x = " << result.x << ", result.y = " << result.y << std::endl;
                    return result;
                }
                result.y++;
            }
            result.x++;
            result.y = 0;
-       }
+	}
+	return sf::Vector2i(-1, -1);
 }
 

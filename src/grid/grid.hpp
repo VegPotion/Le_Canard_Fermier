@@ -18,7 +18,8 @@ class Tile{
         int stage = -1;
         sf::Texture tex;
         sf::Texture cropTex;
-        void setCrop(ItemID cropType);
+        sf::Clock clock;
+        void setCrop(ItemID cropType, int stage);
         std::string path;
 };
 

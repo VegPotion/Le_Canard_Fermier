@@ -60,18 +60,22 @@ void Player::draw(sf::RenderWindow* window){
                     select.setOutlineColor(sf::Color::Black);
                     window->draw(select);
                 }
+		sf::Text name;
+		name.setString("NULL");
+		sf::RectangleShape textBox;
                 if(std::abs(window->mapPixelToCoords(sf::Mouse::getPosition(*window)).x - invItem.x) <= 10.0f && std::abs(window->mapPixelToCoords(sf::Mouse::getPosition(*window)).y - invItem.y) <= 10.0f){
-                    sf::Text name;
                     name.setFont(monogram);
                     name.setFillColor(sf::Color::Black);
                     name.setPosition(invItem.x+invItem.tex.getSize().x,invItem.y/2);
                     name.setString(invItem.name);
-                    sf::RectangleShape textBox(sf::Vector2f(name.getGlobalBounds().width, name.getGlobalBounds().height));
+                    textBox.setSize(sf::Vector2f(name.getGlobalBounds().width, name.getGlobalBounds().height));
                     textBox.setPosition(name.getPosition().x, name.getPosition().y + name.getGlobalBounds().height+4);
-                    window->draw(textBox);
-                    window->draw(name);
                 }
                 window->draw(num);
+		if(name.getString() != "NULL"){
+			window->draw(textBox);
+			window->draw(name);
+		}
             }
         }
     }
@@ -100,7 +104,7 @@ void Player::input(sf::Time delta){
             // I don't have a texture width yet
         }
         else{
-            currentSquare = grid::xyToGridSquare(x + 10, y + 10);
+            currentSquare = grid::xyToGridSquare(x + 20, y + 20);
         }
         if(heldItem.ID == Houe){
             sf::Vector2i nextSquare(-1, -1);
@@ -125,21 +129,24 @@ void Player::input(sf::Time delta){
             if(nextSquare.x >= 0 && nextSquare.x <= 19 && nextSquare.y <= 19 &&  nextSquare.y >= 0){
                 if(!grid::gridSquares.at(nextSquare.x).at(nextSquare.y).tilled){
                     grid::gridSquares.at(nextSquare.x).at(nextSquare.y).tilled = true;
-                    std::cout << "Tilled\n";
+                    // std::cout << "Tilled\n";
                 }
                 else{
-                    std::cout << "Already Tilled\n";
+                    // std::cout << "Already Tilled\n";
                 }
             }
             else{
-                std::cout << "Next Square out of range\n";
-                std::cout << "x: " << nextSquare.x << " y: " << nextSquare.y << std::endl;
+                // std::cout << "Next Square out of range\n";
+                // std::cout << "x: " << nextSquare.x << " y: " << nextSquare.y << std::endl;
             }
         }
-        else if(heldItem.ID >= 7 && heldItem.ID <= 14){
-            if(grid::gridSquares.at(currentSquare.x).at(currentSquare.y).tilled){
-               grid::gridSquares.at(currentSquare.x).at(currentSquare.y).planted = true;
-               grid::gridSquares.at(currentSquare.x).at(currentSquare.y).setCrop(heldItem.ID);
+        else if(heldItem.ID >= Graines_de_Citrouille && heldItem.ID <= Graines_de_chu){
+            if(grid::gridSquares.at(currentSquare.x).at(currentSquare.y).tilled && !grid::gridSquares.at(currentSquare.x).at(currentSquare.y).planted){
+                heldItem.stackSize--;
+                grid::gridSquares.at(currentSquare.x).at(currentSquare.y).clock.restart();
+                grid::gridSquares.at(currentSquare.x).at(currentSquare.y).planted = true;
+                grid::gridSquares.at(currentSquare.x).at(currentSquare.y).setCrop(heldItem.ID, 0);
+                std::cout << "Set grid square at (" << currentSquare.x << ", " << currentSquare.y << ") to have crop " << heldItem.name << "\n";
             }
         }
     }
@@ -233,17 +240,17 @@ void Player::PickupItem(std::vector<Item>* items){
         if((std::abs(x - item.x) <= 25.0f) && (std::abs(y - item.y) <= 25.0f)){
             items->erase(items->begin() + i);
             if(inventory.empty()){
-                std::cout << "added to empty inventory\n";
+                // std::cout << "added to empty inventory\n";
                 inventory.push_back(item);
             }
             else{
                 bool addedToStack = false;
                 for(int j = 0; j < inventory.size(); j++){
                     Item invItem = inventory.at(j);
-                    std::cout << "invItem.ID = " << invItem.ID << std::endl;
-                    std::cout << "item.ID = " << item.ID << std::endl;
+                    // std::cout << "invItem.ID = " << invItem.ID << std::endl;
+                    // std::cout << "item.ID = " << item.ID << std::endl;
                     if(invItem.ID == item.ID){
-                        std::cout << "Combined with " << invItem.name << " x" << invItem.stackSize << std::endl;
+                        // std::cout << "Combined with " << invItem.name << " x" << invItem.stackSize << std::endl;
                         inventory.at(j).stackSize += item.stackSize;
                         addedToStack = true;
                         break;

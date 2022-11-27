@@ -7,11 +7,16 @@
 #include <vector>
 
 int main(){
-    sf::RenderWindow window(sf::VideoMode(800, 450), "La Maisonnette de Agriculture");
+    sf::RenderWindow window(sf::VideoMode(800, 450), "Le Canard Fermier");
     window.setVerticalSyncEnabled(true);
     Player p(0, 0, 200, "NULL");
 
     grid::setGrid(20, 20, &window);
+
+	sf::Sprite floor;
+	sf::Texture t;
+	t.loadFromFile("resources/land.png");
+	floor.setTexture(t);
 
     sf::CircleShape relativeMouse(5.0f);
     sf::CircleShape mouse(5.0f);
@@ -28,6 +33,8 @@ int main(){
     Item i5(Caillou, 100, 150, 19);
     Item i6(Arrosoir, 300, 120, 20);
     Item i7(Houe, 400, 111, 31);
+    Item i8(Graines_de_fraise, 400, 200, 31);
+    Item i9(Graines_de_chu, 200, 300, 123);
     items.push_back(i);
     items.push_back(i2);
     items.push_back(i3);
@@ -35,6 +42,8 @@ int main(){
     items.push_back(i5);
     items.push_back(i6);
     items.push_back(i7);
+    items.push_back(i8);
+    items.push_back(i9);
 
     sf::Clock deltaClock;
 
@@ -48,7 +57,8 @@ int main(){
         p.input(deltaClock.restart());
         p.PickupItem(&items);
 
-        window.clear(sf::Color(20, 130, 10, 255));
+        window.clear();
+		window.draw(floor);
         grid::draw(&window);
         p.draw(&window);
         relativeMouse.setPosition(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y);
